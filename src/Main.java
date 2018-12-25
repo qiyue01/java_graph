@@ -14,7 +14,7 @@ public class Main
         int n,u,v;
         n=in.nextInt();
         match_normal p=new match_normal(n+10,n);
-        for(int i=0;i<n;++i)
+        while(in.hasNext())
         {
             u=in.nextInt();
             v=in.nextInt();
@@ -42,7 +42,7 @@ class match_normal {
 
     match_normal(int MAXN,int n)
     {
-        n=N;
+        N=n;
         graph=new boolean[MAXN][MAXN];
         inqueue=new boolean[MAXN];
         inpath=new boolean[MAXN];
