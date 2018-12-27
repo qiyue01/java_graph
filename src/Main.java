@@ -1,5 +1,7 @@
 
 
+import com.sun.org.apache.bcel.internal.generic.SWAP;
+
 import java.io.*;
 import java.util.*;
 import java.math.*;
@@ -11,27 +13,101 @@ public class Main
 
     public static void main(String[] args)
     {
-        int n,u,v;
-        n=in.nextInt();
-        match_normal p=new match_normal(n+10,n);
-        while(in.hasNext())
-        {
-            u=in.nextInt();
-            v=in.nextInt();
-            p.graph[u][v]=p.graph[v][u]=true;
-        }
-        p.edmond();
-        int count=0;
-        for(int i=1;i<=n;++i)
-            if(p.match[i]>0)
-                count++;
-        out.println(count);
-        for(int i=1;i<=n;++i)
-            if(i<p.match[i])
-                out.println(i+" "+p.match[i]);
+
         out.flush();
         out.close();
     }
+}
+
+class union_find1
+{
+    int fa[];
+    union_find1(int n)
+    {
+        fa=new int[n];
+        Arrays.fill(fa,-1);
+    }
+    int find(int u)
+    {
+        if(fa[u]<0)
+            return u;
+        int x=find(fa[u]);
+        fa[u]=x;
+        return x;
+    }
+    void union(int u,int v)
+    {
+        int x=find(u);
+        int y=find(v);
+        fa[x]=y;
+    }
+}
+
+class zhu_liu
+{
+    private static final int inf = 0x3f3f3f3f;
+    class edge { int u,v,w;}
+    edge edge1[];
+    int pre[],id[],visit[],in[];
+    zhu_liu()
+    {
+
+    }
+    int zhuliu(int root,int  n,int m)
+    {
+        int res=0,u,v;
+        while (true)
+        {
+            for (int i=0;i<n;++i)
+                in[i]=inf;
+            for(int i=0;i<m;i++)
+                if(edge1[i].u!=edge1[i].v && edge1[i].w<in[edge1[i].v])
+                {
+                    pre[edge1[i].v]=edge1[i].u;
+                    in[edge1[i].v]=edge1[i].w;
+                }
+                for(int i=0;i<n;++i)
+                    if(i!=root && in[i]==inf)
+                        return -1;
+            int tn=0;
+            Arrays.fill(id,-1);
+            Arrays.fill(visit,-1);
+            in[root]=0;
+            for(int i=0;i<n;i++)
+            {
+                res+=in[i];
+                v=i;
+                while (visit[v]!=i && id[v]==-1 && v!=root)
+                {
+                    visit[v]=i;
+                    v=pre[v];
+                }
+                if(v!=root && id[v]==-1) {
+                    for (u = pre[v]; u != v; u = pre[u])
+                        id[u] = tn;
+                    id[v] = tn++;
+                }
+            }
+            if(tn==0) break;
+            for(int i=0;i<n;++i)
+                if(id[i]==-1)
+                    id[i]=tn++;
+            for(int i=0;i<m;)
+            {
+                v=edge1[i].v;
+                edge1[i].u=id[edge1[i].u];
+                edge1[i].v=id[edge1[i].v];
+                if(edge1[i].u !=edge1[i].v)
+                    edge1[i++].w-=in[v];
+                else
+                    { edge p=edge1[--m];edge1[--m]=edge1[i];edge1[i]=p;}
+            }
+            n=tn;
+            root=id[root];
+        }
+        return res;
+    }
+
 }
 class match_normal {
     int N;
